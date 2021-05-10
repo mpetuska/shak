@@ -2,18 +2,24 @@ package com.github.mpetuska.shak.config
 
 import com.github.mpetuska.shak.service.MessageService
 import com.github.mpetuska.shak.util.inject
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.receiveText
+import io.ktor.response.respond
+import io.ktor.routing.delete
+import io.ktor.routing.get
+import io.ktor.routing.post
+import io.ktor.routing.route
+import io.ktor.routing.routing
 
 fun Application.installRouting() = routing {
   route("/messages") {
     post {
       val service by inject<MessageService>()
       val message = call.receiveText()
-      call.respond(HttpStatusCode.OK, service.save(message).shA256)
+      val (sha, created) = service.save(message)
+      call.respond(if (created) HttpStatusCode.Created else HttpStatusCode.OK, sha.shA256)
     }
     get("/{sha256}") {
       val service by inject<MessageService>()

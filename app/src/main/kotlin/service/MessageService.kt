@@ -5,11 +5,13 @@ import com.github.mpetuska.shak.repository.MessageRepository
 import com.github.mpetuska.shak.util.SHA256
 import com.github.mpetuska.shak.util.sha256
 
-
 class MessageService(
   private val repository: MessageRepository,
 ) {
-  suspend fun save(message: String): Message = repository.save(message.sha256(), message)
+  suspend fun save(message: String): Pair<Message, Boolean> {
+    val sha256 = message.sha256()
+    return repository.find(sha256)?.let { it to false } ?: (repository.save(sha256, message) to true)
+  }
 
   suspend fun find(sha256: SHA256): Message? = repository.find(sha256)
 

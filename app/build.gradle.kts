@@ -1,7 +1,9 @@
 plugins {
   kotlin("jvm")
   kotlin("plugin.serialization")
+  id("info.solidsoft.pitest")
   application
+  jacoco
 }
 
 kotlin {
@@ -25,11 +27,31 @@ kotlin {
         implementation("io.ktor:ktor-server-tests:_")
         implementation("io.kotest:kotest-runner-junit5:_")
         implementation("io.kotest.extensions:kotest-assertions-ktor:_")
+        implementation("io.kotest.extensions:kotest-extensions-pitest:_")
+        implementation("io.mockk:mockk:_")
       }
     }
   }
 }
 
+pitest {
+  testPlugin.set("Kotest")
+  targetClasses.set(listOf("com.github.mpetuska.shak.*"))
+}
+
 application {
-  mainClass.set("io.ktor.server.cio.EngineMain")
+  mainClass.set("com.github.mpetuska.shak.MainKt.main")
+}
+
+tasks {
+  test {
+    finalizedBy(jacocoTestReport)
+  }
+  jacocoTestReport {
+    dependsOn(test)
+    finalizedBy(jacocoTestCoverageVerification)
+  }
+  check {
+    dependsOn(pitest)
+  }
 }

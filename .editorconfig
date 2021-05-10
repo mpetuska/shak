@@ -1,4 +1,5 @@
 root = true
 
-[*.{kt, kts}]
+[*.{kt,kts}]
 indent_size = 2
+ij_kotlin_name_count_to_use_star_import = 99

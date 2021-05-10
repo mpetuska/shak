@@ -1,7 +1,7 @@
 package com.github.mpetuska.shak.util
 
-import io.ktor.application.*
-import io.ktor.util.pipeline.*
+import io.ktor.application.ApplicationCall
+import io.ktor.util.pipeline.PipelineContext
 import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 import org.kodein.di.on

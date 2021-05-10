@@ -12,14 +12,14 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 class MessageRepository(
   private val database: Database,
 ) {
-  suspend fun find(sha256: String): Message? = newSuspendedTransaction(db = database) {
+  suspend fun find(sha256: SHA256): Message? = newSuspendedTransaction(db = database) {
     MessagesTable.select { MessagesTable.sha256 eq sha256 }
       .firstOrNull()
       ?.let(::Message)
   }
 
   suspend fun save(sha256: SHA256, message: String): Message = newSuspendedTransaction(db = database) {
-    find(sha256) ?: MessagesTable.insert {
+    MessagesTable.insert {
       it[this.sha256] = sha256
       it[this.message] = message
     }.resultedValues!!.first().let(::Message)
